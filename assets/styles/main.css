@@ -1,0 +1,48 @@
+body,
+html {
+  font-family: "Varela Round", sans-serif;
+  font-weight: bold;
+  margin: 0;
+  font-size:20px;
+}
+
+a {
+  text-decoration: none;
+}
+.box{
+	border-radius: 7px;
+}
+.hand{
+	cursor: pointer;
+}
+.right{
+	float:right;
+}
+.container {
+  text-align: center;
+}
+.wrapper{
+	vertical-align: top;
+}
+.padded{
+	padding: 20px;
+}
+.icon i, .icon{
+	font-size:2rem;
+}
+.red{
+	border-color:orangered;
+	background-color:orangered;
+	}
+	.blue {
+	border-color:blue;
+	background-color:blue ;
+	}
+	.green{
+	border-color:forestgreen;
+	background-color:forestgreen;
+	}
+	.yellow{
+	border-color:yellow;
+	background-color:yellow;
+	}
