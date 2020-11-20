@@ -12,18 +12,21 @@ a {
 .box{
 	border-radius: 7px;
 }
-.hand{
+.cursor{
 	cursor: pointer;
 }
 .right{
 	float:right;
 }
+.left{
+	float:left;
+}
 .container {
   text-align: center;
 }
-.wrapper{
+/* .wrapper{
 	vertical-align: top;
-}
+} */
 .padded{
 	padding: 20px;
 }
@@ -46,3 +49,41 @@ a {
 	border-color:yellow;
 	background-color:yellow;
 	}
+
+	.fade-enter-active, .fade-leave-active {
+		transition: opacity .5s;
+	  }
+	  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+		opacity: 0;
+	  }
+
+	  .center-frame{
+		margin:0 10%;
+	}
+
+	.no-decoration:link,
+	.no-decoration.visited,
+	.no-decoration:hover
+	.no-decoration:visited,
+	.no-decoration:active {
+		color: inherit;
+		text-decoration: none;
+	  }
+	  
+	  a div{
+		  color: inherit;
+	  }
+	  .el-row {
+		margin-bottom: 20px;
+	  }
+	  .el-row:last-child{
+		margin-bottom: 0;
+	  }
+	  .el-divider{
+		  height: auto!important;
+		  margin:0 20px!important;
+	  }
+	  .el-button a{
+		  color:white!important;
+		  font-size: 1.3em;
+	  }

@@ -21,7 +21,6 @@
 			'buzzer':Number,
 			'currentTeam':Number,
 			'isVisible':Boolean,
-
 		},
 		data(){
 			return {

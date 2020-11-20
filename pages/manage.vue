@@ -1,29 +1,46 @@
 <template>
-	<div class="wrapper" @click.self="currentTeam=null">
-		<div class="team-selector">
-			<h4>Nombre d'équipes</h4>
-			<el-radio-group v-model="nbTeams" size="medium" @change="formatTeams()">
-				<el-radio-button label="0">Solo</el-radio-button>
-				<el-radio-button label="2">2</el-radio-button>
-				<el-radio-button label="3">3</el-radio-button>
-				<el-radio-button label="4">4</el-radio-button>
-			</el-radio-group>
-		</div>
-		<div class="teams">
-				<div @click="[currentTeam=currentTeam==teamIndex ? null : teamIndex]" :class="[{active:currentTeam==teamIndex}, 'team box padded']" v-for="(team,teamIndex) in teams" :key="teamIndex">
+	<div class="manager" @click.self="currentTeam=null">
 
+		<!-- Game Options -->
+		<el-row type="flex">
+			<div class="team-selector">
+				<h4>Nombre d'équipes</h4>
+				<el-radio-group v-model="nbTeams" size="medium" @change="formatTeams()">
+					<el-radio-button label="0">Solo</el-radio-button>
+					<el-radio-button label="2">2</el-radio-button>
+					<el-radio-button label="3">3</el-radio-button>
+					<el-radio-button label="4">4</el-radio-button>
+				</el-radio-group>
+			</div>
+			<el-divider direction="vertical"></el-divider>
+			<div class="game-loader">
+				<h4>Charger une partie</h4>
+				<el-input placeholder="Entrer le code" v-model="input"></el-input>
+			</div>			
+		</el-row>
+		<el-row>
+
+		<!-- Teams Section -->
+		<div class="teams">
+				<div @click="[currentTeam=currentTeam==teamIndex ? null : teamIndex]" :class="[{active:currentTeam==teamIndex}, 'team box padded cursor']" v-for="(team,teamIndex) in teams" :key="teamIndex">
+
+						<!-- Team Settings -->
 						<h4>{{'Équipe '+team.name}}</h4>
 						<BuzzerSoundSelect :teamIndex="teamIndex" :selectedSound="team.buzzerSound"/>
-						<div class="player-tag box" v-for="(player,index) in playersInTeam(teamIndex)" :id="player.id" :key="index">
+						
+						<!-- Added Players -->
+						<div class="player box" v-for="(player,index) in playersInTeam(teamIndex)" :id="player.id" :key="index">
 						<div :class="[player.color, 'color active']">{{player.buzzer}}</div>
 						<div>{{player.name.toUpperCase()}}</div>
 						<el-tooltip class="item" effect="dark" content="Suprrimer le joueur" placement="top">
-							<div @click="removePlayer(player.id, player.name)" class="el-icon-close delete right hand"></div>
+							<div @click="removePlayer(player.id, player.name)" class="el-icon-close delete right cursor"></div>
 						</el-tooltip>
 					</div>
 				</div>
 			</div>
-			<v-btn><nuxt-link to="/game">Jouer</nuxt-link></v-btn>
+		</el-row>
+
+		<el-button v-show="players.length>0" type="success" round><nuxt-link to="/game">Jouer</nuxt-link></el-button>
 
 		<AddPlayerForm :isVisible.sync="showAddPlayerForm" :buzzer="buzzer" :currentTeam.sync="currentTeam" @closeForm="showAddPlayerForm=false"/>
 		
@@ -35,7 +52,7 @@
 
 <script>
 		
-import 'element-ui/lib/theme-chalk/index.css';
+// import 'element-ui/lib/theme-chalk/index.css';
 import BuzzerSoundSelect from '../components/BuzzerSoundSelect.vue';
 import AddPlayerForm from '../components/AddPlayerForm.vue';
 
@@ -44,6 +61,7 @@ import AddPlayerForm from '../components/AddPlayerForm.vue';
 
 		data(){
 			return{
+				input:'',
 				showAddPlayerForm: false,
 				buzzer:undefined,
 				nbTeams:null,	
@@ -58,20 +76,23 @@ import AddPlayerForm from '../components/AddPlayerForm.vue';
       			return this.$store.state.teams;
 			}
 		},
+		destroyed(){
+			window.removeEventListener('keydown',this.onKeyDown);
+		},
 		mounted() {
 			this.nbTeams=this.teams.length;
 			var that=this;
-			window.addEventListener('keydown',(e)=> {
+			window.addEventListener('keydown',this.onKeyDown);
+	},methods: {
+		onKeyDown(e){
 				if(e.keyCode>=49 && e.keyCode<=56){
 					let buzzerPressed=toBuzzerNumber(e.keyCode);
 					if (this.players.filter(e => e.buzzer == buzzerPressed).length == 0) {
 						this.buzzer=buzzerPressed;
 						this.showAddPlayerForm=true;	
-						console.log(this.showAddPlayerForm);
 					}	
-				}	
-			});
-	},methods: {
+				}
+		},
 		isFormVisible(state){
 			this.showAddPlayerForm=state;
 			console.log(this.showAddPlayerForm);
@@ -79,7 +100,6 @@ import AddPlayerForm from '../components/AddPlayerForm.vue';
 		formatTeams(){
 			this.$store.commit('setTeams',this.nbTeams);
 		},
-		
 		removePlayer(id,name){
 			this.$store.commit('removePlayer',id);
 			notify(this, name+' a été retiré','error');
@@ -88,21 +108,20 @@ import AddPlayerForm from '../components/AddPlayerForm.vue';
 		playersInTeam(team){
 				return this.players.filter(obj => {
 					return obj.team == team
-				});
-			},
+			});
+		},
     }
 	}
 </script>
 
 <style>
-.teams{
+.manager .teams{
   display:grid;
   grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   grid-gap:10px;
 }
 .consigne{
 	padding:50px;
-
 }
 .center{
 	text-align:center;
@@ -117,7 +136,7 @@ import AddPlayerForm from '../components/AddPlayerForm.vue';
   h4{
 	  margin-bottom:20px;
   }
-  .team{
+  .manager .team{
 	  border: #ddd 2px solid;
 
 	  color:#ccc;
@@ -150,7 +169,7 @@ import AddPlayerForm from '../components/AddPlayerForm.vue';
 .color:hover{
 	border:2px black solid; 
 }
-.player-tag{
+.manager .player{
 	padding:10px;
 	color:black;
 	background-color: white;
@@ -158,7 +177,7 @@ import AddPlayerForm from '../components/AddPlayerForm.vue';
     display: table;
 	margin-bottom:10px;
 }
-.player-tag div{
+.manager .player div{
    display: inline-table;
     vertical-align: middle;
 }

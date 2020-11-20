@@ -7,10 +7,15 @@ function toBuzzerNumber(nb){
 	return parseInt(String.fromCharCode(nb));
 };
 function notify(ctx, message, type){
-	ctx.$notify({
-		message: message,
-		type: type,
-		position: 'bottom-right',
-		duration:2000
-	});
+	switch(type){
+		case 'error':
+			ctx.$message.error(message);
+		break;
+		default:
+			ctx.$message({
+				message: message,
+				type: type
+			});
+		break;
+	}
 };

@@ -1,14 +1,20 @@
 <template>
 	<div>
-	<el-col :span=2 class="side"></el-col>
-	<el-col :span=20 >
-    <nuxt />
-
-	</el-col>
-    <el-col :span=2 class="side"></el-col>
+		<TopNav/>
+		<div class="center-frame">
+			<nuxt />
+		</div>
 	</div>
 </template>
 <script>
+import 'element-ui/lib/theme-chalk/index.css';
+import TopNav from '@/components/TopNav.vue';
+
+export default {
+	components: {
+		TopNav
+	},
+};
 </script>
 <style>
 .side{

@@ -1,15 +1,28 @@
 <template>
-
 	<div>
-		<div class="scoreboard">
-					<div class="team" v-for="(team, teamIndex) in teams" :key="teamIndex">
-			<div class="score">{{score(teamIndex)}}</div>
-			<div v-show="current == player.buzzer" class="player" :class="[{ 'active' : current == player.buzzer}, player.color]" v-for="(player,index) in playersInTeam(teamIndex)" :key="index">{{index+1+' '+player.name}}</div>
-		</div>
+		<div class="board">
+			<div class="team" v-for="(team, teamIndex) in teams" :key="teamIndex">
+				<div class="score-container">
+					<transition name="score-spin" mode="out-in">
+						<div class="score" :key="score(teamIndex)">{{score(teamIndex)}}</div>
+					</transition>
+				</div>
+
+				<div
+					v-for="(player,index) in playersInTeam(teamIndex)" 
+					:class="[{ 'active' : activeBuzzer == player.buzzer}, 'player-container '+player.color]" 
+					:key="index">
+									<transition>
+					<div class="player">{{player.name.toUpperCase()}}
+					</div>
+							</transition>
+				</div>
+		
+			</div>
 			</div>
 
 		<div v-show="isBlur" class="blur-warning">CLICK HERE!</div>
-		<nuxt-link to="/add"><div class="el-icon-edit icon" to="/add"></div></nuxt-link>
+		<nuxt-link to="/manage"><div class="el-icon-edit icon" to="/add"></div></nuxt-link>
 	</div>
 
 </template>
@@ -18,8 +31,9 @@
 	export default {
 		data(){
 			return {
-				current:0,
-				lastBuzzerIncremented:0,
+				activePlayer:undefined,
+				lastPlayer:undefined,
+				changeScoreAnimation:false,
 				isBlur:false
 			}
 		},
@@ -29,9 +43,29 @@
 			},
 			players() {
       			return this.$store.state.players;
+			},
+			activeTeam(){
+				return (this.activePlayer)?this.activePlayer.team:undefined;
+			},
+			activeBuzzer(){
+				return (this.activePlayer)?this.activePlayer.buzzer:undefined;
 			}
 		},
 		methods:{
+			onKeyUp(e){
+				if(e.keyCode>=49 && e.keyCode<=56){
+					this.buzzerPressed(toBuzzerNumber(e.keyCode));
+				}
+				if(e.keyCode==82){//R
+					this.activePlayer=undefined;
+				}			
+				if(e.keyCode==83){//S
+					this.goodAnswer();
+				}	
+				if(e.keyCode==8){//Backspace
+					this.removeScore();
+				}		
+			},
 			score(team) {
 				let score=0;
       			this.players.filter(obj => {
@@ -51,36 +85,37 @@
 				var player = this.players.filter(obj => {
 					return obj.buzzer == buzzerId
 				})[0];
-				playSound(this.teams[player.team].buzzerSound);
-				this.current=buzzerId;
+				if (player){
+					if(this.teams[player.team].buzzerSound){
+						playSound(this.teams[player.team].buzzerSound);
+					}
+					this.activePlayer=player;
+				};
+
 			},
 			//Good answer, add score to last buzzer	
 			goodAnswer(){
-				playSound('reponse');
-				this.$store.commit('changeScore',{buzzer:this.current, add:true});
-				this.lastBuzzerIncremented=this.current;
-				this.current=0;
+				if(this.activePlayer){
+					playSound('reponse');
+					this.$store.commit('changeScore', {buzzer:this.activePlayer.buzzer, add:true});
+					this.lastPlayer=this.activePlayer;
+					this.changeScoreAnimation=true;
+					//this.changeScoreAnimation=false;
+					this.activePlayer=undefined;
+				}
 			},
 			removeScore(){
-				this.$store.commit('changeScore',{buzzer:this.lastBuzzerIncremented, add:false});	
+				this.$store.commit('changeScore',{buzzer:this.lastPlayer.buzzer, add:false});	
 			}
+		},  
+		destroyed () {
+				window.removeEventListener('keydown', this.onKeyUp);
+
 		},
+		//ON LEAVING PAGE' REMOVE LISTENERS!!!!!!!!!!!!
 		mounted() {
 			var that=this;
-			window.addEventListener('keydown',(e)=> {
-				if(e.keyCode>=49 && e.keyCode<=56){
-					that.buzzerPressed(toBuzzerNumber(e.keyCode));
-				}
-				if(e.keyCode==82){//R
-					that.current=0;
-				}			
-				if(e.keyCode==83){//S
-					that.goodAnswer();
-				}	
-				if(e.keyCode==8){//Backspace
-					that.removeScore();
-				}		
-			});
+			window.addEventListener('keydown', this.onKeyUp);
 			window.addEventListener('blur', ()=>{that.isBlur=true;});
 			window.addEventListener('focus', ()=>{that.isBlur=false;});
     },
@@ -88,35 +123,45 @@
 </script>
 
 <style>
-.scoreboard .team{
-   display: inline-block;
-    *display: inline; /* For IE7 */
-    zoom: 1; /* Trigger hasLayout */
-    width: 33%;
-    text-align: center;
-	background-color: pink;
+.board{
+	display: flex;
+	justify-content: space-between;
+
+}
+.board .team{
 	text-align: center;
 }
-.score{
-	padding:50px;
-	font-size:300%;
-	position:absolute;
-	top:0;
+.board .score-container{
 	background-color: white;
 	border: 4px solid red;
 	border-radius:50%;
-	width:200px;
-	height:200px;
+	width:130px;
+	height:130px;
+	text-align: center;
+	display: table-cell;
+	overflow: hidden;
+	vertical-align:middle;
+	overflow: hidden;
+
 }
-.score.right{
-	right:0;
+.board .score{
+	font-size:280%;
 }
-.score.left{
-	left:0;
+
+.score-spin-enter, .score-spin-leave-to{
+	transform: translateY(150%);
 }
-.player{
-	position:absolute;
-	left:50%;
+.score-spin-enter-active{
+	transition: all 400ms cubic-bezier(.47,1.64,.41,.8);
+}
+.board .player-container{
+	border-radius: 0% 20px 20px 0;
+	color: white;
+	width:150px;
+
+	margin:5px;
+}
+.board .player{
 	color: white;
 	width:120px;
 	height:80px;
@@ -124,7 +169,7 @@
 	margin:5px;
 }
 
-.player.active{
+.board .player.active{
 	transition: all 0.2s;
 	width: 400px;
 	height:300px;

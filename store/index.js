@@ -1,4 +1,5 @@
 export const state = () => ({
+	user:{name:''},
 	increment:10,
 	id:0,
 	teams:[
@@ -11,6 +12,11 @@ export const getters = {
 	}
   };
 export const mutations = {
+setUserToken(state, token){
+	state.user['token']=token;
+	},setUserName(state, name){
+		state.user['name']=name;
+		},
   activatePlayer(state, { team, player }) {
     state.teams[team].players[player].isActive = true;
   },
