@@ -1,24 +1,27 @@
 <template>
-	<div>
-		<TopNav/>
-		<div class="center-frame">
-			<nuxt />
-		</div>
-	</div>
+  <div>
+    <TopNav />
+    <div class="center-frame">
+      <nuxt />
+    </div>
+  </div>
 </template>
 <script>
-import 'element-ui/lib/theme-chalk/index.css';
-import TopNav from '@/components/TopNav.vue';
+import "element-ui/lib/theme-chalk/index.css";
+import TopNav from "@/components/TopNav.vue";
 
 export default {
-	components: {
-		TopNav
-	},
+  components: {
+    TopNav
+  }
 };
 </script>
 <style>
-.side{
-	min-height:100vh;
-	background-color:linen;
+body {
+  background-color: rgb(104, 207, 255);
+}
+.side {
+  min-height: 100vh;
+  background-color: rgb(79, 41, 110);
 }
 </style>

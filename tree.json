@@ -1,0 +1,18 @@
+{
+"questions":[
+	{
+		"question":"Quel singe?",
+		"answer":"Macaque Auto",
+		"type":"plain"
+	},
+	{
+		"question":"Quel zèbre?",
+		"choices":[
+			"Gilles", "Patof", "Greg"
+		],
+		"answer":"Puma",
+		"type":"choices"
+	}
+
+]
+}

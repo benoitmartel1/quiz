@@ -23,10 +23,8 @@ export default {
         rel: "stylesheet"
       },
       { rel: "icon", type: "image/x-icon", href: "/favicon.ico" }
-	],
-	script:[
-		{src:"/js/routines.js"}
-		]
+    ],
+    script: [{ src: "/js/routines.js" }]
   },
 
   // Global CSS (https://go.nuxtjs.dev/config-css)
@@ -37,18 +35,19 @@ export default {
   },
 
   // Plugins to run before rendering page (https://go.nuxtjs.dev/config-plugins)
-  plugins: ['@/plugins/element-ui'] ,
-
+  plugins: ["@/plugins/element-ui", "@/plugins/supabase"],
 
   // Auto import components (https://go.nuxtjs.dev/config-components)
   components: true,
 
   // Modules for dev and build (recommended) (https://go.nuxtjs.dev/config-modules)
-  buildModules: ['@nuxtjs/dotenv',"@nuxtjs/vuetify"],
+  buildModules: ["@nuxtjs/dotenv", "@nuxtjs/vuetify"],
 
   // Modules (https://go.nuxtjs.dev/config-modules)
-  modules: ["@nuxtjs/axios"],
-
+  modules: ["@nuxtjs/axios", "cookie-universal-nuxt"],
+  router: {
+    middleware: ["auth"]
+  },
   // Build Configuration (https://go.nuxtjs.dev/config-build)
   build: {}
 };
